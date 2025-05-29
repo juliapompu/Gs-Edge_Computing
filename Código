@@ -1,0 +1,106 @@
+// Código
+
+#include <Wire.h>
+#include <LiquidCrystal_I2C.h>
+
+
+//pinos e lcd
+const int ledvermelho = 11;
+const int ledamarelo = 12;
+const int ledverde = 13;
+const int buzzer = 10;
+const int echo = 5;
+const int trigger = 4;
+float dist = 0;
+const int M_dist = 0;
+int estadoDisplay = M_dist;
+
+unsigned long millisDisplayAgora = 0;
+unsigned long millisDisplayAnterior = 0;
+int tempoMDisplay = 1000;
+LiquidCrystal_I2C LCD(0x27, 16, 2);
+
+//saidas
+void setup(){
+  LCD.init();
+  LCD.backlight();
+  pinMode(ledvermelho, OUTPUT);
+  pinMode(ledamarelo, OUTPUT);
+  pinMode(ledverde, OUTPUT);
+  pinMode(buzzer, OUTPUT);
+  pinMode(trigger, OUTPUT);
+  pinMode(echo, INPUT);
+  Serial.begin(9600);
+}
+
+//guarda td
+void loop(){
+  verifica_sensores();
+  mostra_mensagem();
+}
+
+//ifs
+void verifica_sensores(){
+  digitalWrite(trigger,LOW);
+  delayMicroseconds(5);        
+  digitalWrite(trigger,HIGH);  
+  delayMicroseconds(10);      
+  digitalWrite(trigger,LOW); 
+  
+  dist=pulseIn(echo,HIGH);      
+  dist = dist/58;
+  Serial.print ("Distancia = ");
+  Serial.print (dist);         
+  Serial.print (" cm");         
+  Serial.write (10);            
+  delay (200); 
+  
+  if(dist > 251 && dist< 320){
+  	digitalWrite(ledverde, LOW);
+    digitalWrite(ledamarelo, HIGH);
+    digitalWrite(ledvermelho,LOW);
+    digitalWrite(buzzer, LOW); 
+    
+  }if (dist >100 && dist <250){
+    digitalWrite(ledverde, HIGH);
+    digitalWrite(ledamarelo, LOW);
+    digitalWrite(ledvermelho, LOW);
+    digitalWrite(buzzer, LOW);
+    
+  }if (dist > 330){
+    digitalWrite(ledverde, LOW);
+    digitalWrite(ledamarelo, LOW);
+    digitalWrite(ledvermelho, HIGH);
+    digitalWrite(buzzer, HIGH);
+  
+  } 
+}
+
+//aqui é a mensagem no LCD
+void mostra_mensagem() {
+  millisDisplayAgora = millis();
+
+  if (millisDisplayAgora - millisDisplayAnterior > tempoMDisplay) {
+    LCD.clear();
+    LCD.setCursor(1, 0);
+
+    switch (estadoDisplay) {
+      case M_dist:
+        if(dist > 251 && dist< 320){
+          LCD.print("Nivel Baixo!");
+        }if (dist >100 && dist <250){
+          LCD.print("Nivel Ok!");
+        }if (dist > 330){
+          LCD.print("Nivel ALTO!");
+        }
+        LCD.setCursor(0, 1);
+        LCD.print("Distancia: ");
+        LCD.print(dist);
+        estadoDisplay = M_dist;
+        break;
+
+    millisDisplayAnterior = millis();
+    }
+  }
+}
+
