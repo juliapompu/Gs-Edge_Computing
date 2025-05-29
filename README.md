@@ -32,6 +32,10 @@ O sistema foi **montado fisicamente** e também **simulado no Tinkercad**.
 
 > [image](https://github.com/user-attachments/assets/f7cc73ba-a4de-4be5-9908-9cffdcae1e93)
 
+### 🎬 Vídeo Explicativo
+> [clique aqui para acessar o vídeo](https://www.youtube.com/watch?v=yIJOSYBAGL0)
+
+
 ## 🔧 Componentes Utilizados
 
 - 1 × **Arduino Uno R3**  
